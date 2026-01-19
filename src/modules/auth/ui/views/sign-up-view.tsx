@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FaGithub,  FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { OctagonAlertIcon } from "lucide-react";
 import { useState } from "react";
@@ -54,11 +55,12 @@ export const SignUpView = () => {
         name: data.name,
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
           router.refresh();
-          router.push("/");
+          router.push("/sign-in");
         },
         onError: (err) => {
           setError(err.error.message);
@@ -153,7 +155,7 @@ export const SignUpView = () => {
                     type="submit"
                     className="w-full bg-black text-white hover:bg-black/90"
                   >
-                    <Link href="/sign-in">Sign up</Link>
+                    Sign up
                   </Button>
                 </div>
 
@@ -163,12 +165,31 @@ export const SignUpView = () => {
                   <div className="h-px flex-1 bg-border" />
                 </div>
 
-                <div className="flex gap-3">
-                  <Button variant="outline" className="w-full">
-                    Google
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    Github
+                <div className="flex gap-3 flex-row">
+                <Button 
+                  onClick={() => {
+                        authClient.signIn.social({
+                            provider: "google"
+                        })
+                    }}
+                    variant="outline" 
+                    className="w-full"
+                  >
+                  Google
+                </Button>
+                </div>
+
+                <div className="flex gap-3 flex-col mt-3">
+                  <Button 
+                    onClick={() => {
+                        authClient.signIn.social({
+                            provider: "github"
+                        })
+                    }}
+                    variant="outline" 
+                    className="w-full"
+                  >
+                    GitHub
                   </Button>
                 </div>
 
