@@ -175,7 +175,7 @@ export const SignUpView = () => {
                     variant="outline" 
                     className="w-full"
                   >
-                  Google
+                    <FaGoogle />
                 </Button>
                 </div>
 
@@ -189,7 +189,7 @@ export const SignUpView = () => {
                     variant="outline" 
                     className="w-full"
                   >
-                    GitHub
+                    <FaGithub />
                   </Button>
                 </div>
 
