@@ -10,14 +10,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+    DrawerDescription,
+    DrawerFooter
+} from "@/components/ui/drawer";
 import { useRouter } from "next/navigation";
 import {  CreditCardIcon, LogOutIcon } from "lucide-react";
 import { user } from "@/db/schema";
+import { Button } from "@/components/ui/button";
 import { GeneratedAvatar } from "@/components/generated-avatar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const DashboardUserButton = () => {
   const { data, isPending } = authClient.useSession();
   const router = useRouter();
+  const isMobile = useIsMobile();
 
   const onLogout = () => {
     authClient.signOut({
@@ -32,6 +44,47 @@ export const DashboardUserButton = () => {
   if (isPending || !data?.user) {
     return null;
   }
+
+  if(isMobile) {
+    return (
+        <Drawer>
+            <DrawerTrigger className="flex items-center gap-2 rounded-lg border border-border/10 p-3 w-full bg-white/5 hover:bg-white/10 font-medium overflow-hidden">
+            {data.user.image ? (
+                <Avatar>
+                    <AvatarImage src={data.user.image} />
+                </Avatar>
+            ) : ( <GeneratedAvatar seed={data.user.name ?? data.user.email}
+                variant="initials"
+                className="size-9 mr-3" />)}
+            <span className="max-w-[120px] truncate">
+                {data.user.name ?? data.user.email}
+            </span>
+                </DrawerTrigger>
+                <DrawerContent>
+            <DrawerHeader>
+                <DrawerTitle>{data.user.name}</DrawerTitle>
+                <DrawerDescription>{data.user.email}</DrawerDescription>
+            </DrawerHeader>
+            <DrawerFooter>
+                <Button
+                variant="outline"
+                onClick={() => {}}
+                >
+                <CreditCardIcon className="size-4 mr-2" />
+                Billing
+                </Button>
+                <Button
+                variant="destructive"
+                onClick={onLogout}
+                >
+                <LogOutIcon className="mr-2 h-4 w-4" />
+                Log out
+                </Button>
+            </DrawerFooter>
+                </DrawerContent>
+        </Drawer>
+        )
+    }
 
   return (
     <DropdownMenu>
