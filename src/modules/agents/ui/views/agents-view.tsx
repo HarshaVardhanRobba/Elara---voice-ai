@@ -8,15 +8,25 @@ import { DataTable } from "../components/data-table";
 import { columns } from "../components/columns";
 import { Empty } from "@/components/ui/empty";
 import { EmptyState } from "@/components/empty-state";
+import { useAgentsFilters } from "../../hooks/use-agents-filters";
+import { DataPagination } from "../components/data-pagination";
 
 export const AgentsView = () => {
+  const [filters, setFilter] = useAgentsFilters();
   const trpc = useTRPC();
-  const { data } = useSuspenseQuery(trpc.agents.getMany.queryOptions());
+  const { data } = useSuspenseQuery(trpc.agents.getMany.queryOptions({
+    search: filters.search,
+  }));
 
   return (
     <div className=" flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4 w-full">
-        <DataTable data={data} columns={columns}/>
-        {data.length === 0 && (
+        <DataTable data={data.items} columns={columns}/>
+        <DataPagination 
+          totalPages={data.totalPages} 
+          page={filters.page} 
+          onPageChange={(page) => setFilter({ page })}
+        />
+        {data.items.length === 0 && (
           <EmptyState 
             title="No Agents" 
             description="You have not created any agents yet."/>

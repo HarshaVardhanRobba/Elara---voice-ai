@@ -9,8 +9,16 @@ import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import React from 'react'
 import { ErrorBoundary } from 'react-error-boundary';
+import  { SearchParams } from "nuqs";
+import { loadSearchParams } from '@/modules/agents/params';
 
-const Page = async () => {
+interface DashboardAgentpageProps {
+  searchParams: Promise<SearchParams>; 
+}
+
+const Page = async ({ searchParams }: DashboardAgentpageProps) => {
+  const filters = await loadSearchParams(searchParams);
+
   const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -20,7 +28,9 @@ const Page = async () => {
     }
 
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(trpc.agents.getMany.queryOptions());
+  void queryClient.prefetchQuery(trpc.agents.getMany.queryOptions({
+    search: filters.search
+  }));
 
   return (
     <>
