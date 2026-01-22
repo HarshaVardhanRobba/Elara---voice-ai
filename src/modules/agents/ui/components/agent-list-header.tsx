@@ -12,7 +12,7 @@ export const AgentsListHeader = () => {
         <>
         <NewAgentDialog
             open={isDialogOpen} onOpenChange={setIsDialogOpen} />
-        <div className="py-4 px-4 md:px-8 flex flex-col gap-y-4">
+        <div className="p-4 md:px-8 flex flex-col gap-y-4 w-full">
             <div className="flex items-center justify-between">
                 <h5 className="text-xl font-extrabold">Agents</h5>
                 <Button onClick={() => setIsDialogOpen(true)} variant="default">

@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { VideoIcon, BotIcon, StarIcon } from "lucide-react";
 import Link from "next/link";
 import { DashboardUserButton } from "./DashboardUserButton";
+import Image from "next/image";
 
 const firstSectionItems = [
   {
@@ -48,8 +49,9 @@ export const DashboardSidebar = ({ theme = "light" }: DashboardSidebarProps) => 
   return (
     <Sidebar className={cn(theme === "dark" ? "bg-dark" : "bg-light")}>
       <SidebarHeader className="px-4 py-3">
+        <Image src="/logo.svg" width={200} height={200} alt="logo" className="mb-4 h-10 w-10 text-rose-500" />
         <span className="text-lg font-semibold text-foreground">
-          Meet.AI
+          Elara
         </span>
       </SidebarHeader>
 
