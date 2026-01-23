@@ -10,17 +10,24 @@ import { Empty } from "@/components/ui/empty";
 import { EmptyState } from "@/components/empty-state";
 import { useAgentsFilters } from "../../hooks/use-agents-filters";
 import { DataPagination } from "../components/data-pagination";
+import { useRouter } from "next/navigation";
 
 export const AgentsView = () => {
   const [filters, setFilter] = useAgentsFilters();
   const trpc = useTRPC();
+  const router = useRouter();
   const { data } = useSuspenseQuery(trpc.agents.getMany.queryOptions({
     search: filters.search,
+    page: filters.page,
   }));
 
   return (
     <div className=" flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4 w-full">
-        <DataTable data={data.items} columns={columns}/>
+        <DataTable 
+          data={data.items} 
+          columns={columns}
+          onRowClick={(row) => router.push(`/agents/${row.id}`)}
+        />
         <DataPagination 
           totalPages={data.totalPages} 
           page={filters.page} 
