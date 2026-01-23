@@ -1,0 +1,82 @@
+import {
+    Breadcrumb,
+    BreadcrumbList,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbPage,
+    BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { ChevronRightIcon, MoreVerticalIcon, Pencil, PencilIcon, Trash2 } from "lucide-react"
+import Link from "next/link"
+
+interface AgentIDviewHeaderProps {
+    agentId: string
+    agentname: string
+    onEdit: () => void
+    onremove: () => void
+}
+
+export const AgentIDviewHeader = ({
+    agentId,
+    agentname,
+    onEdit,
+    onremove,
+}: AgentIDviewHeaderProps) => {
+    return (
+        <div className="flex items-center justify-between pt-4 pb-2 md:pt-6">
+            {/* Left: Breadcrumb + Title */}
+            <div className="space-y-1">
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild className="font-medium text-2xl">
+                                <Link href="/agents">My Agents
+                                </Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator>
+                            <ChevronRightIcon className="h-4 w-4" />
+                        </BreadcrumbSeparator>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink asChild className="font-medium text-2xl text-foreground">
+                                <Link href={`/agents/${agentId}`}>
+                                    {agentname}
+                                </Link>
+                            </BreadcrumbLink>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+                <p className="text-sm text-muted-foreground">
+                    Agent ID: {agentId}
+                </p>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-2">
+                <DropdownMenu modal={false}>
+                    <DropdownMenuTrigger asChild>
+                        <Button 
+                            variant="ghost" size="lg"
+                        >
+                            <MoreVerticalIcon/>
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={onEdit}>
+                            <PencilIcon className="mr-2 h-4 w-4 text-black" />
+                            Edit
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem onClick={onremove}>
+                            <Trash2 className="mr-2 h-4 w-4 text-lg" />
+                            Delete
+                        </DropdownMenuItem>
+
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        </div>
+    )
+}
