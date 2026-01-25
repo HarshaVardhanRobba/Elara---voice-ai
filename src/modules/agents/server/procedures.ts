@@ -1,13 +1,52 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
 import { agents } from "@/db/schema";
-import { AgentSchema } from "../schemas";
+import { AgentSchema, AgentUpdateSchema } from "../schemas";
 import { z } from "zod";
 import { and, count, desc, eq, getTableColumns, like, sql } from "drizzle-orm";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE, MIN_PAGE_SIZE } from "@/constants";
 import { TRPCError } from "@trpc/server";
 
 export const agentsRouter = createTRPCRouter({
+    update: protectedProcedure
+    .input(AgentUpdateSchema)
+    .mutation(async ({ input, ctx }) => {
+        const [UpdateAgent] = await db
+        .update(agents)
+        .set(input)
+        .where(
+            and(
+                eq(agents.id, input.id),
+                eq(agents.userId, ctx.auth.user.id)
+            )     
+        ).returning();
+
+        if(!UpdateAgent) {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found"});
+        }
+        
+        return UpdateAgent;
+    }),
+    remove: protectedProcedure
+    .input(
+        z.object({ 
+            id: z.string() 
+        })
+    ).mutation(async ({ input, ctx }) => {
+        const [removeagent] = await db.delete(agents).where(
+            and(
+                eq(agents.id, input.id),
+                eq(agents.userId, ctx.auth.user.id)
+            ),  
+        )
+        .returning();
+
+        if(!removeagent) {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found"});
+        }
+        
+        return removeagent;
+    }),
     getMany: protectedProcedure
     .input(
         z.object({ 
@@ -54,7 +93,11 @@ export const agentsRouter = createTRPCRouter({
             total: total[0].count, 
             totalPages };
     }),
-    getOne: protectedProcedure.input(z.object({ id: z.string()})).query(async ({ input, ctx }) => {
+    getOne: protectedProcedure
+    .input(
+        z.object({ id: z.string()})
+    )
+    .query(async ({ input, ctx }) => {
         const [existingAgent] = await db
         .select({
             meetingsCount: sql<number>`5`,

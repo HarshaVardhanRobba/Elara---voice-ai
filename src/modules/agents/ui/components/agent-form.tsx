@@ -33,20 +33,33 @@ export const AgentForm = ({ onSuccess, onCancel, initialvalues }: AgentFormProps
     const TRPC = useTRPC();
     const queryClient = useQueryClient();
 
-        const createAgent = useMutation(TRPC.agents.create.mutationOptions({
-            onSuccess: async () => {
-                await queryClient.invalidateQueries(TRPC.agents.getMany.queryOptions({})
-            );
+    const createAgent = useMutation(TRPC.agents.create.mutationOptions({
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(TRPC.agents.getMany.queryOptions({})
+        );
 
-            if (initialvalues?.id) {
-                await queryClient.invalidateQueries(TRPC.agents.getOne.queryOptions({ id: initialvalues.id }));
-            }
-
-            onSuccess?.();
+        onSuccess?.();
+    },
+        onError: (error) => {
+            toast.error(error.message);
         },
-            onError: (error) => {
-                toast.error(error.message);
-            },
+        }),
+    );
+
+    const UpdateAgent = useMutation(TRPC.agents.update.mutationOptions({
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(TRPC.agents.getMany.queryOptions({})
+        );
+
+        if (initialvalues?.id) {
+            await queryClient.invalidateQueries(TRPC.agents.getOne.queryOptions({ id: initialvalues.id }));
+        }
+
+        onSuccess?.();
+    },
+        onError: (error) => {
+            toast.error(error.message);
+        },
         }),
     );
 
@@ -59,12 +72,12 @@ export const AgentForm = ({ onSuccess, onCancel, initialvalues }: AgentFormProps
     });
 
     const isEdit = !!initialvalues?.id;
-    const isPending = createAgent.isPending;
+    const isPending = createAgent.isPending || UpdateAgent.isPending;
 
 
     const Onsubmit = (values: z.infer<typeof AgentSchema>) => {
         if(isEdit) {
-            console.log("TODO: update Agent");
+            UpdateAgent.mutate({...values, id: initialvalues?.id});
         }
         else {
         createAgent.mutate(values);
@@ -120,5 +133,5 @@ export const AgentForm = ({ onSuccess, onCancel, initialvalues }: AgentFormProps
                 </div>
             </form>
         </Form>
-                    );
+    );
 }

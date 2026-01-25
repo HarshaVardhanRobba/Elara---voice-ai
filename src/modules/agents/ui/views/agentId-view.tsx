@@ -2,12 +2,17 @@
 
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
+import { useState } from "react";
 import { useTRPC } from "@/trpc/client";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { AgentIDviewHeader } from "../components/agent-id-view-header";
 import { GeneratedAvatar } from "@/components/generated-avatar";
 import { Badge } from "@/components/ui/badge";
-import { VideoIcon } from "lucide-react";
+import { VideoIcon } from "lucide-react";;
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useConfirm } from "../../hooks/use-confirm";
+import {UpdateAgentDialog} from "../components/update-agent-dialog";
 
 interface AgentIDviewPops {
     agentId: string
@@ -15,19 +20,55 @@ interface AgentIDviewPops {
 
 export const AgentIdview = ({agentId}: AgentIDviewPops) => {
     const trpc = useTRPC();
+    const router = useRouter();
+    const queryClinent = useQueryClient();
+    const [isRemoveAgentDialogVisible, setRemoveAgentDialogVisible] = useState(false);
 
-    const { data, isLoading, isError } = useSuspenseQuery(trpc.agents.getOne.queryOptions({ id: agentId }));
+    const [UpdateAgentdialogOpen, setUpdateAgentdialogOpen] = useState(false);
 
-    if (isLoading) return <AgentsIdViewLoading />;
-    if (isError) return <AgentsIdViewError />;
+    const { data } = useSuspenseQuery(trpc.agents.getOne.queryOptions({ id: agentId }));
+
+    const removeAgent = useMutation(trpc.agents.remove.mutationOptions({
+        onSuccess: async () => {
+            await queryClinent.invalidateQueries(trpc.agents.getMany.queryOptions({})); 
+            router.push("/agents");
+        },
+        onError: (error) => {
+            toast.error(error.message);
+        }
+        })
+    );
+
+    const [RemoveAgentConfirmation, confirmRemove] = useConfirm(
+        "Delete Agent",
+        `Are you sure you want to delete this agent?. This will remove ${data.meetingsCount} assosiated meetings`,
+    );
+
+    const handleRemoveAgent = async () => {
+    setRemoveAgentDialogVisible(true);
+    const ok = await confirmRemove();
+
+    if (!ok) {
+        setRemoveAgentDialogVisible(false);
+        return;
+    }
+
+    await removeAgent.mutate({ id: agentId });
+    setRemoveAgentDialogVisible(false);
+};
 
     return (
-    <div className="bg-muted/30 p-4">
-        <AgentIDviewHeader 
-            agentId={agentId}
-            agentname={data.name}
-            onEdit={() => console.log("edit")}
-            onremove={() => console.log("remove")}
+        <>
+        {isRemoveAgentDialogVisible && <RemoveAgentConfirmation />}
+        <UpdateAgentDialog 
+            open={UpdateAgentdialogOpen} onOpenChange={setUpdateAgentdialogOpen} initialvalues={data}
+        />
+        <div className="bg-muted/30 p-4">
+            <AgentIDviewHeader 
+                agentId={agentId}
+                agentname={data.name}
+                onEdit={() => setUpdateAgentdialogOpen(true)}
+                onremove={handleRemoveAgent}
         />
 
         <div className="mt-4 bg-white rounded-lg border px-5 py-4">
@@ -65,6 +106,7 @@ export const AgentIdview = ({agentId}: AgentIDviewPops) => {
             </div>
         </div>
     </div>
+    </>
 )
 }
 
