@@ -7,6 +7,8 @@ import { PlusIcon, XCircleIcon } from "lucide-react"
 import { useAgentsFilters } from "../../hooks/use-agents-filters"
 import { AgentsSearchFilter } from "./agents-search-filter"
 import { DEFAULT_PAGE_SIZE } from "@/constants"
+import { ScrollBar } from "@/components/ui/scroll-area"
+import { ScrollArea } from "@radix-ui/react-scroll-area"
 
 export const AgentsListHeader = () => {
     const [filters, setFilter] = useAgentsFilters();
@@ -33,6 +35,7 @@ export const AgentsListHeader = () => {
                     New Agent
                 </Button>
             </div>
+            <ScrollArea>
             <div className="flex items-center gap-x-2 p-1">
                 <AgentsSearchFilter />
                 {isAnyFilterModified && 
@@ -46,6 +49,8 @@ export const AgentsListHeader = () => {
                     )
                 }
             </div>
+            <ScrollBar orientation="horizontal"/>
+            </ScrollArea>
         </div>
     </>
     )
