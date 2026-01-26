@@ -4,6 +4,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
+import { DataTable } from "@/components/data-table";
+import { columns } from "../components/columns";
+import { EmptyState } from "@/components/empty-state";
 
 export const MeetingsView = () => {
     const trpc = useTRPC();
@@ -11,7 +14,15 @@ export const MeetingsView = () => {
  
     return ( 
         <div>
-            {JSON.stringify(data)}
+            <DataTable 
+              data={data.items}
+              columns={columns}
+            />
+            {data.items.length === 0 && (
+              <EmptyState
+                title="create your first meeting" 
+                description="You have not created any meetings yet."/>
+            )}
         </div>
     )
 }

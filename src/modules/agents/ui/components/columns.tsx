@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { AgentGetOne } from "../../types"
+import { AgentsGetMany } from "../../types"
 import { GeneratedAvatar } from "@/components/generated-avatar"
 import { CornerDownRightIcon, CornerRightDownIcon, VideoIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
@@ -15,36 +15,37 @@ export type Payment = {
   email: string
 }
 
-export const columns: ColumnDef<AgentGetOne>[] = [
+export const columns: ColumnDef<AgentsGetMany[number]>[] = [
   {
     accessorKey: "name",
     header: "Agent Name",
     cell: ({ row }) => (
-        <div className="flex flex-col gap-y-1">
-            <div className="flex items-center gap-x-2">
-                <GeneratedAvatar 
-                    seed={row.original.name} variant="botttsNeutral"
-                    className="size-9" 
-                />
-                <span className="font-semibold gap-x-2 ">{row.original.name}</span>
-            </div>
-            <div className="flex items-center gap-x-2">
-                <div className="flex items-center gap-x-2">
-                    <CornerDownRightIcon className="size-3 text-muted-foreground"/>
-                    <span className="text-sm text-muted-foreground max-w-[200px] truncate capitalize">{row.original.instructions}</span>
-                </div>
-            </div>
+      <div className="flex flex-col gap-y-1">
+        <div className="flex items-center gap-x-2">
+          <GeneratedAvatar
+            seed={row.original.name}
+            variant="botttsNeutral"
+            className="w-9 h-9"
+          />
+          <span className="font-semibold">{row.original.name}</span>
         </div>
-    )
+        <div className="flex items-center gap-x-2">
+          <CornerDownRightIcon className="w-3 h-3 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground max-w-[200px] truncate capitalize overflow-hidden">
+            {row.original.instructions}
+          </span>
+        </div>
+      </div>
+    ),
   },
   {
     accessorKey: "meetingsCount",
     header: "Meetings",
     cell: ({ row }) => (
-        <Badge variant="outline" className="flex items-center gap-x-2">
-            <VideoIcon className="text-blue-800"/>
-            {row.original.meetingsCount} {row.original.meetingsCount === 1 ? "Meeting" : "Meetings"}
-        </Badge>
-    )
-  }
-]
+      <Badge variant="outline" className="flex items-center gap-x-2">
+        <VideoIcon className="w-4 h-4 text-blue-800" />
+        {row.original.meetingsCount} Meeting{row.original.meetingsCount !== 1 ? "s" : ""}
+      </Badge>
+    ),
+  },
+];
