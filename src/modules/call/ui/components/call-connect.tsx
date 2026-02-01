@@ -46,7 +46,12 @@ export const CallConnect = ({
                 name: userName,
                 image: userImage,
             },
-            tokenProvider: generateToken,
+            tokenProvider: async () => {
+                // wrap mutateAsync so any args passed by the SDK are ignored
+                // and we always call the protected TRPC mutation without input
+                const token = await generateToken();
+                return token;
+            },
         });
 
         setClient(_client);

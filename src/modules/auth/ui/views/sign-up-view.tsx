@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const formSchema = z
   .object({
@@ -207,7 +208,13 @@ export const SignUpView = () => {
           <div className="hidden md:flex items-center justify-center bg-linear-to-br from-green-700 to-green-900">
             <div className="text-center text-white">
               <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white/10">
-                <div className="h-10 w-10 rounded-full border-4 border-white/40" />
+                <Image
+                  src="/logo.svg"
+                  alt="Elara logo"
+                  width={40}
+                  height={40}
+                  priority
+                />
               </div>
               <p className="text-xl font-semibold">Elara</p>
             </div>

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const formSchema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -173,7 +174,13 @@ export const SignInView = () => {
             <div className="text-center text-white">
               <div className="mx-auto mb-4 h-20 w-20 rounded-full bg-white/10 flex items-center justify-center">
                 {/* Replace with SVG logo */}
-                <div className="h-10 w-10 rounded-full border-4 border-white/40" />
+                <Image
+                  src="/logo.svg"
+                  alt="Elara logo"
+                  width={40}
+                  height={40}
+                  priority
+                />
               </div>
               <p className="text-xl font-semibold">Elara</p>
             </div>
