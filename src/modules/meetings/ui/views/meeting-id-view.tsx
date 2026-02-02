@@ -19,6 +19,7 @@ import { ActiveState } from "../components/active-state";
 import { Cancel } from "@radix-ui/react-alert-dialog";
 import { CancelledState } from "../components/cancelled-state";
 import { PendingState } from "../components/pending-state";
+import { CompletedState } from "../components/completed-state";
 
 interface MeetingIdViewProps {
   meetingsId: string;
@@ -93,7 +94,7 @@ export const MeetingIdView = ({ meetingsId }: MeetingIdViewProps) => {
         />
 
         {isCancelled && <CancelledState />}
-        {isCompleted && <div>Completed</div>}
+        {isCompleted && <CompletedState data={data} />}
         {isPending && <PendingState />}
         {isUpcomming && <UpcommingState 
             meetingId={meetingsId}

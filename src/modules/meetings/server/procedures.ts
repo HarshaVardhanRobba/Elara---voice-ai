@@ -40,7 +40,7 @@ export const meetingsRouter = createTRPCRouter({
         .select({
             ...getTableColumns(meetings),
             agent: agents,
-            duration: sql<number>`EXTRACT(EPOCH FROM ${meetings.EndedAt} - ${meetings.startedAt})`.as("duration"),
+            duration: sql<number>`EXTRACT(EPOCH FROM ${meetings.endedAt} - ${meetings.startedAt})`.as("duration"),
         })
         .from(meetings)
         .innerJoin(agents, eq(meetings.agentId, agents.id))
@@ -88,7 +88,7 @@ export const meetingsRouter = createTRPCRouter({
         .select({
             ...getTableColumns(meetings),
             agent: agents,
-            duration: sql<number>`EXTRACT(EPOCH FROM ${meetings.EndedAt} - ${meetings.startedAt})`.as("duration"),
+            duration: sql<number>`EXTRACT(EPOCH FROM ${meetings.endedAt} - ${meetings.startedAt})`.as("duration"),
         })
         .from(meetings)
         .innerJoin(agents, eq(meetings.agentId, agents.id))
@@ -231,12 +231,13 @@ export const meetingsRouter = createTRPCRouter({
 
     const ExpirationTime = Math.floor(Date.now() / 1000) + 3600;
 
-    const issuedAt = Math.floor(Date.now() / 1000) - 60;
+    // set issued-at slightly in the past to account for minor clock skew
+    const issuedAt = Math.floor(Date.now() / 1000) - 5;
 
     const token = streamVideo.generateUserToken({
-      user_id: ctx.auth.user.id, 
-      validity: issuedAt, 
-      exp: ExpirationTime
+      user_id: ctx.auth.user.id,
+      iat: issuedAt,
+      exp: ExpirationTime,
     });
 
     return token;

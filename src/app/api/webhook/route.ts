@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
             .update(meetings)
             .set({
                 status: "pending",
-                EndedAt: new Date(),
+                endedAt: new Date(),
             })
             .where(
                 and(
@@ -162,8 +162,8 @@ export async function POST(request: NextRequest) {
 
         if(!updatedMeeting) {
             return NextResponse.json(
-                { error: "Missing meetingId" },
-                { status: 400 }
+                { error: "meeting not found" },
+                { status: 404 }
             );
         }
 
@@ -171,9 +171,9 @@ export async function POST(request: NextRequest) {
             name: "meetings/processing",
             data: {
                 meetingId: updatedMeeting.id,
-                trascriptUrl: updatedMeeting.transcriptUrl
-            }
-        })
+                transcriptUrl: updatedMeeting.transcriptUrl,
+            },
+        });
     } else if (eventType === "call.recording_ready") {
         const event = payload as CallRecordingReadyEvent;
         const meetingId = event.call_cid.split(":")[1];
