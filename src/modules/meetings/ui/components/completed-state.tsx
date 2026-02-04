@@ -8,6 +8,8 @@ import { GeneratedAvatar } from "@/components/generated-avatar";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { formatDuration } from "@/lib/utils";
+import { Transcript } from "./transcript";
+import { ChatProvider } from "./chat-provider";
 
 interface CompletedStateProps {
     data: MeetingsGetOne;
@@ -45,7 +47,7 @@ export const CompletedState = ({ data }: CompletedStateProps) => {
                         </TabsTrigger>
 
                         <TabsTrigger
-                            value="Asking_ai"
+                            value="chat"
                             className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium data-[state=active]:bg-muted"
                         >
                             <SparklesIcon className="h-4 w-4" />
@@ -54,6 +56,13 @@ export const CompletedState = ({ data }: CompletedStateProps) => {
                     </TabsList>
                     <ScrollBar orientation="horizontal" />
                 </ScrollArea>
+
+                <TabsContent value="chat">
+                    <ChatProvider meetingName={data.name} meetingId={data.id} />
+                </TabsContent>
+                <TabsContent value="transcript">
+                    <Transcript meetingId={data.id} />
+                </TabsContent>
 
                 {/* Recording */}
                 <TabsContent value="recording">
