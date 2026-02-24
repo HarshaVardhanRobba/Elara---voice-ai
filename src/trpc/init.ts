@@ -2,6 +2,10 @@ import { initTRPC, TRPCError } from '@trpc/server';
 import { cache } from 'react';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { polarClient } from '@/lib/polar';
+import { count, eq } from 'drizzle-orm';
+import { agents, meetings } from '@/db/schema';
+import { db } from '@/db';
 export const createTRPCContext = cache(async () => {
   /**
    * @see: https://trpc.io/docs/server/context
@@ -32,4 +36,44 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next}) => {
   }
 
   return next({ ctx: { ...ctx, auth: session} });
-}) 
+});
+
+export const premuiumprocedure = (entity: 'agents' | 'meetings') => protectedProcedure.use(async ({ ctx, next}) => {
+  const customer = await polarClient.customers.getStateExternal({
+    externalId: ctx.auth.user.id,
+
+  });
+
+  const [userMeetings] = await db
+    .select({
+        count: count(meetings.id),
+    })
+    .from(meetings)
+    .where(eq(meetings.userId, ctx.auth.user.id))
+  
+  const [userAgents] = await db
+    .select({
+        count: count(agents.id),
+    })
+    .from(agents)
+    .where(eq(agents.userId, ctx.auth.user.id));
+
+  const isPremuim = customer.activeSubscriptions.length > 0;
+  const isFreeAgentLimitReached =  userAgents.count >= 5;
+  const isFreeMeetingLimitReached = userMeetings.count >= 5;
+
+  const shouldThrowAgentError = !isPremuim && entity === 'agents' && isFreeAgentLimitReached;
+
+  const shouldThrowMeetingError = !isPremuim && entity === 'meetings' && isFreeMeetingLimitReached;
+
+  if (shouldThrowAgentError) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You have reached the free limit for ' + entity + '. Please upgrade to premium to create more.' });
+  }
+
+  if (shouldThrowMeetingError) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You have reached the free limit for ' + entity + '. Please upgrade to premium to create more.' });
+  }
+
+  return next({ ctx });
+
+})

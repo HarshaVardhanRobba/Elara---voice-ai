@@ -31,6 +31,8 @@ export const AgentIdview = ({agentId}: AgentIDviewPops) => {
     const removeAgent = useMutation(trpc.agents.remove.mutationOptions({
         onSuccess: async () => {
             await queryClinent.invalidateQueries(trpc.agents.getMany.queryOptions({})); 
+            await queryClinent.invalidateQueries(trpc.premium.getFreeUsage.queryOptions()
+        );
             router.push("/agents");
         },
         onError: (error) => {

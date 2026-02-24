@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { createTRPCRouter, premuiumprocedure, protectedProcedure } from "@/trpc/init";
 import { db } from "@/db";
 import { agents } from "@/db/schema";
 import { AgentSchema, AgentUpdateSchema } from "../schemas";
@@ -118,7 +118,7 @@ export const agentsRouter = createTRPCRouter({
 
         return existingAgent;
     }),
-    create: protectedProcedure
+    create: premuiumprocedure('agents')
     .input(AgentSchema)
     .mutation(async ({ input, ctx }) => {
         const [createdAgent] = await db

@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 import { pgTable, text, timestamp, boolean, index, pgEnum } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -116,3 +117,44 @@ export const meetings = pgTable("meetings", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull()
 });
+
+// Relations
+export const userRelations = relations(user, ({ many }) => ({
+  sessions: many(session),
+  accounts: many(account),
+  agents: many(agents),
+  meetings: many(meetings),
+}));
+
+export const sessionRelations = relations(session, ({ one }) => ({
+  user: one(user, {
+    fields: [session.userId],
+    references: [user.id],
+  }),
+}));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+}));
+
+export const agentsRelations = relations(agents, ({ one, many }) => ({
+  user: one(user, {
+    fields: [agents.userId],
+    references: [user.id],
+  }),
+  meetings: many(meetings),
+}));
+
+export const meetingsRelations = relations(meetings, ({ one }) => ({
+  user: one(user, {
+    fields: [meetings.userId],
+    references: [user.id],
+  }),
+  agent: one(agents, {
+    fields: [meetings.agentId],
+    references: [agents.id],
+  }),
+}));

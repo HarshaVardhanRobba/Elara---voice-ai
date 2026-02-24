@@ -16,6 +16,7 @@ import { usePathname } from "next/navigation";
 import { VideoIcon, BotIcon, StarIcon } from "lucide-react";
 import Link from "next/link";
 import { DashboardUserButton } from "./DashboardUserButton";
+import { DashboardTrial } from "./DashboardTrial";
 import Image from "next/image";
 
 const firstSectionItems = [
@@ -47,56 +48,72 @@ export const DashboardSidebar = ({ theme = "light" }: DashboardSidebarProps) => 
   const pathname: string = usePathname(); // Utilize 'usePathname' to get the current path
 
   return (
-    <Sidebar className={cn(theme === "dark" ? "bg-dark" : "bg-light")}>
-      <SidebarHeader className="px-4 py-3">
-        <Image src="/logo.svg" width={200} height={200} alt="logo" className="mb-4 h-10 w-10 text-rose-500" />
-        <span className="text-lg font-semibold text-foreground">
-          Elara
-        </span>
-      </SidebarHeader>
+    <Sidebar className="!bg-emerald-950 !text-emerald-100 border-r border-emerald-900">
 
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {firstSectionItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild className={cn("h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to sidebar/50", pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to sidebar/50")}
-                  isActive={pathname === item.href}
-                  >
-                    <Link href={item.href} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
-                      <span className="text-sm font-medium tracking-tight">{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
+  <SidebarHeader className="px-4 py-6">
+    <div className="flex items-center gap-2">
+      <Image src="/logo.svg" width={28} height={28} alt="logo" />
+      <span className="text-lg font-semibold">ELARA</span>
+    </div>
+  </SidebarHeader>
 
-      <SidebarFooter>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {secondSectionItems.map((item) => (
-                <SidebarMenuItem key={item.label}>
-                  <SidebarMenuButton asChild className={cn("h-10 hover:bg-linear-to-r/oklch border border-transparent hover:border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to sidebar/50", pathname === item.href && "bg-linear-to-r/oklch border-[#5D6B68]/10 from-sidebar-accent from-5% via-30% via-sidebar/50 to sidebar/50")}
-                  isActive={pathname === item.href}
-                  >
-                    <Link href={item.href} className="flex items-center gap-3">
-                      <item.icon className="h-4 w-4" />
-                      <span className="text-sm font-medium tracking-tight">{item.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <DashboardUserButton />
-      </SidebarFooter>
-    </Sidebar>
+  <SidebarContent className="px-3">
+
+    <SidebarGroup className="mb-4">
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {firstSectionItems.map((item) => (
+            <SidebarMenuItem key={item.label}>
+              <SidebarMenuButton
+                asChild
+                className={cn(
+                  "h-10 rounded-lg px-3 transition-colors",
+                  "hover:bg-emerald-900/60",
+                  pathname === item.href && "bg-emerald-900"
+                )}
+              >
+                <Link href={item.href} className="flex items-center gap-3">
+                  <item.icon className="h-4 w-4 text-emerald-400" />
+                  <span className="text-sm font-medium text-emerald-200">{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+
+    <SidebarGroup className="mt-6 border-t border-emerald-900 pt-4">
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {secondSectionItems.map((item) => (
+            <SidebarMenuItem key={item.label}>
+              <SidebarMenuButton
+                asChild
+                className={cn(
+                  "h-10 rounded-lg px-3 transition-colors",
+                  "hover:bg-emerald-900/60",
+                  pathname === item.href && "bg-emerald-900"
+                )}
+              >
+                <Link href={item.href} className="flex items-center gap-3">
+                  <item.icon className="h-4 w-4 text-emerald-400" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+
+  </SidebarContent>
+
+  <SidebarFooter className="mt-auto space-y-3 px-3 pb-4">
+    <DashboardTrial />
+    <DashboardUserButton />
+  </SidebarFooter>
+
+</Sidebar>
   );
 };

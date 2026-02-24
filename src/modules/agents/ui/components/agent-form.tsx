@@ -20,6 +20,7 @@ import {
   FormField
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 
 
@@ -32,6 +33,8 @@ interface AgentFormProps {
 export const AgentForm = ({ onSuccess, onCancel, initialvalues }: AgentFormProps) => {
     const TRPC = useTRPC();
     const queryClient = useQueryClient();
+
+    const router = useRouter();
 
     const createAgent = useMutation(TRPC.agents.create.mutationOptions({
         onSuccess: async () => {
@@ -48,7 +51,10 @@ export const AgentForm = ({ onSuccess, onCancel, initialvalues }: AgentFormProps
 
     const UpdateAgent = useMutation(TRPC.agents.update.mutationOptions({
         onSuccess: async () => {
-            await queryClient.invalidateQueries(TRPC.agents.getMany.queryOptions({})
+            await queryClient.invalidateQueries(TRPC.agents.getMany.queryOptions({}),
+        );
+
+            await queryClient.invalidateQueries(TRPC.premium.getFreeUsage.queryOptions(),
         );
 
         if (initialvalues?.id) {
@@ -59,6 +65,10 @@ export const AgentForm = ({ onSuccess, onCancel, initialvalues }: AgentFormProps
     },
         onError: (error) => {
             toast.error(error.message);
+
+            if(error.data?.code === "FORBIDDEN") {
+                router.push("/upgrade");
+            }
         },
         }),
     );
