@@ -13,10 +13,18 @@ interface Props {
 export const CallProvider = ({ meetingId, meetingname }: Props) => {
   const { data, isPending } = authClient.useSession();
 
-  if (isPending || !data?.user) {
+  if (isPending) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center bg-linear-to-br from-emerald-900 via-green-900 to-teal-900">
-        <Loader2Icon className="h-6 w-6 animate-spin text-white/80" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2Icon className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!data?.user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">
+        Unable to load user session.
       </div>
     );
   }
@@ -27,10 +35,13 @@ export const CallProvider = ({ meetingId, meetingname }: Props) => {
       meetingname={meetingname}
       userId={data.user.id}
       userName={data.user.name}
-      userImage={data.user.image ?? GenerateAvatarUri({ 
-        seed: data.user.name,
-        variant: "initials"
-      })}
+      userImage={
+        data.user.image ??
+        GenerateAvatarUri({
+          seed: data.user.name,
+          variant: "initials",
+        })
+      }
     />
   );
 };

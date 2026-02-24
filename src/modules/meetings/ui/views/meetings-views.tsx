@@ -12,42 +12,70 @@ import { useMeetingsFilters } from "../../hooks/use-meetings-filters";
 import { DataPagination } from "@/components/data-pagination";
 
 export const MeetingsView = () => {
-    const trpc = useTRPC();
-    const router = useRouter();
+  const trpc = useTRPC();
+  const router = useRouter();
 
-    const [filters, setFilter] = useMeetingsFilters();
+  const [filters, setFilter] = useMeetingsFilters();
 
-    const {data} = useSuspenseQuery(trpc.meetings.getMany.queryOptions({
-      ...filters
-    }));
- 
-    return ( 
-        <div>
-            <DataTable 
-              data={data.items}
-              columns={columns}
-              onRowClick={(row) => router.push(`/meetings/${row.id}`)}
+  const { data } = useSuspenseQuery(
+    trpc.meetings.getMany.queryOptions({
+      ...filters,
+    })
+  );
+
+  const isEmpty = data.items.length === 0;
+
+  return (
+    <div className="min-h-[calc(100vh-80px)] w-full bg-gray-50">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+
+        {isEmpty ? (
+          <div className="flex items-center justify-center py-16">
+            <EmptyState
+              title="Create your first meeting"
+              description="You have not created any meetings yet."
             />
-            <DataPagination 
-              totalPages={data.totalPages}
-              page={filters.page}
-              onPageChange={(page) => setFilter({page})}
-            />
-              <EmptyState
-                title="create your first meeting" 
-                description="You have not created any meetings yet."/>
-        </div>
-    )
-}
+          </div>
+        ) : (
+          <div className="space-y-6">
+
+            {/* Table Container */}
+            <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+              <DataTable
+                data={data.items}
+                columns={columns}
+                onRowClick={(row) =>
+                  router.push(`/meetings/${row.id}`)
+                }
+              />
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-end">
+              <DataPagination
+                totalPages={data.totalPages}
+                page={filters.page}
+                onPageChange={(page) =>
+                  setFilter({ page })
+                }
+              />
+            </div>
+
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const MeetingsViewLoading = () => {
   return (
-    <LoadingState 
-      title="Loading Agents" 
-      description="Please wait while we load your agents."
+    <LoadingState
+      title="Loading Meetings"
+      description="Please wait while we load your meetings."
     />
-  )
-}
+  );
+};
 
 export const MeetingsViewError = () => {
   return (
@@ -55,5 +83,5 @@ export const MeetingsViewError = () => {
       title="Something went wrong"
       description="Please try again later."
     />
-  )
-}
+  );
+};

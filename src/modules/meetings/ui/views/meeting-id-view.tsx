@@ -76,37 +76,47 @@ export const MeetingIdView = ({ meetingsId }: MeetingIdViewProps) => {
   const isPending = data.status === "pending";
 
   return (
-    <>
-      {/* Mount confirm dialog ONLY when needed */}
-      {showRemoveConfirm && <RemoveConfirmation />}
+  <>
+    {showRemoveConfirm && <RemoveConfirmation />}
 
-      <UpdateMeetingDialog
-        open={updateDialogOpen}
-        onOpenChange={setUpdateDialogOpen}
-        initialvalues={data}
-      />
+    <UpdateMeetingDialog
+      open={updateDialogOpen}
+      onOpenChange={setUpdateDialogOpen}
+      initialvalues={data}
+    />
 
-      <div className="flex py-4 px-4 md:px-8 flex-col gap-y-4">
-        <MeetingIDviewHeader
-          meetingId={meetingsId}
-          meetingname={data.name}
-          onEdit={() => setUpdateDialogOpen(true)}
-          onremove={handleRemoveMeeting}
-        />
+    <div className="min-h-[calc(100vh-80px)] w-full bg-gray-50">
+      <div className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 lg:px-8">
 
-        {isCancelled && <CancelledState />}
-        {isCompleted && <CompletedState data={data} />}
-        {isPending && <PendingState />}
-        {isUpcomming && <UpcommingState 
+        {/* Header */}
+        <div className="mb-6">
+          <MeetingIDviewHeader
             meetingId={meetingsId}
-            onCancelMeeting={() => router.push(`/call/${meetingsId}
-            `)}
-            isCancelling={false}
-        />}
-        {isActive && <ActiveState meetingId={meetingsId} />}
+            meetingname={data.name}
+            onEdit={() => setUpdateDialogOpen(true)}
+            onremove={handleRemoveMeeting}
+          />
+        </div>
+
+        {/* Status Content */}
+        <div className="rounded-xl bg-white p-4 shadow-sm sm:p-6">
+          {isCancelled && <CancelledState />}
+          {isCompleted && <CompletedState data={data} />}
+          {isPending && <PendingState />}
+          {isUpcomming && (
+            <UpcommingState
+              meetingId={meetingsId}
+              isCancelling={false}
+            />
+          )}
+          {isActive && (
+            <ActiveState meetingId={meetingsId} />
+          )}
+        </div>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 };
 
 export const MeetingsIdViewLoading = () => {

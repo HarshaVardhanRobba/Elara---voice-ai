@@ -59,22 +59,37 @@ export const ChatUI = ({
 
   if (!client) {
     return (
-      <LoadingState
-        title="Loading Chat"
-        description="Please wait while we load your agents."
-      />
+      <div className="flex h-[60vh] items-center justify-center">
+        <LoadingState
+          title="Loading Chat"
+          description="Please wait while we load your chat."
+        />
+      </div>
     );
   }
 
   return (
+  <div className="flex h-[calc(100vh-80px)] w-full flex-col overflow-hidden rounded-xl border bg-white shadow-sm">
     <Chat client={client}>
       <Channel channel={channel}>
-        <Window>
-          <MessageList />
-          <MessageInput />
-        </Window>
-        <Thread />
+        <div className="flex h-full w-full">
+
+          {/* Main Chat Window */}
+          <div className="flex flex-1 flex-col border-r">
+            <Window>
+              <MessageList />
+              <MessageInput />
+            </Window>
+          </div>
+
+          {/* Thread (hidden on small screens) */}
+          <div className="hidden lg:block w-80 border-l">
+            <Thread />
+          </div>
+
+        </div>
       </Channel>
     </Chat>
-  );
+  </div>
+);
 }

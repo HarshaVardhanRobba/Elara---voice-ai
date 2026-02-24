@@ -26,6 +26,7 @@ interface ResponsiveDialogProps {
   title: string;
   description?: string;
   children: React.ReactNode;
+  className?: string;
 }
 
 export const ResponsiveDialog = ({
@@ -34,21 +35,26 @@ export const ResponsiveDialog = ({
   title,
   description,
   children,
+  className,
 }: ResponsiveDialogProps) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent>
-          <DrawerHeader>
+        <DrawerContent className="max-h-[90vh]">
+          <DrawerHeader className="px-4 pt-4">
             <DrawerTitle>{title}</DrawerTitle>
             {description && (
-              <DrawerDescription>{description}</DrawerDescription>
+              <DrawerDescription>
+                {description}
+              </DrawerDescription>
             )}
           </DrawerHeader>
 
-          <div className="px-4 pb-6">{children}</div>
+          <div className="px-4 pb-6 overflow-y-auto">
+            {children}
+          </div>
         </DrawerContent>
       </Drawer>
     );
@@ -56,15 +62,21 @@ export const ResponsiveDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent
+        className={`w-full max-w-2xl max-h-[85vh] overflow-y-auto ${className ?? ""}`}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && (
-            <DialogDescription>{description}</DialogDescription>
+            <DialogDescription>
+              {description}
+            </DialogDescription>
           )}
         </DialogHeader>
 
-        {children}
+        <div className="pt-2">
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -1,3 +1,5 @@
+"use client";
+
 import { StreamTheme, useCall } from "@stream-io/video-react-sdk";
 import { useState } from "react";
 import { CallLobby } from "./call-lobby";
@@ -10,34 +12,41 @@ interface Props {
 
 export const CallUI = ({ meetingName }: Props) => {
   const call = useCall();
-  const [show, setShow] = useState<"lobby" | "call" | "ended">("lobby");
+  const [phase, setPhase] = useState<"lobby" | "call" | "ended">("lobby");
 
   const handleJoin = async () => {
     if (!call) return;
 
-    // ✅ ensure call exists before joining
-    await call.join({ create: true });
-    setShow("call");
+    try {
+      await call.join({ create: true });
+      setPhase("call");
+    } catch (err) {
+      console.error("Join failed", err);
+    }
   };
 
   const handleLeave = () => {
-    // ✅ DO NOT call call.leave() here (CallControls already does it)
-    setShow("ended");
+    setPhase("ended");
   };
 
   return (
-    <StreamTheme className="min-h-screen w-full">
-      {show === "lobby" && (
-        <CallLobby onJoin={handleJoin} />
-      )}
+    <StreamTheme className="min-h-screen w-full bg-background">
+      <div className="flex min-h-screen w-full">
+        {phase === "lobby" && (
+          <CallLobby onJoin={handleJoin} />
+        )}
 
-      {show === "call" && (
-        <CallActive onLeave={handleLeave} meetingName={meetingName} />
-      )}
+        {phase === "call" && (
+          <CallActive
+            onLeave={handleLeave}
+            meetingName={meetingName}
+          />
+        )}
 
-      {show === "ended" && (
-        <CallEnded />
-      )}
+        {phase === "ended" && (
+          <CallEnded />
+        )}
+      </div>
     </StreamTheme>
   );
 };
