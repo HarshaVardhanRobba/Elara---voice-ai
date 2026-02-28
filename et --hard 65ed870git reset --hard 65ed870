@@ -1,0 +1,40 @@
+[33m7609741[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33m65ed870[m HEAD@{1}: reset: moving to HEAD
+[33m65ed870[m HEAD@{2}: Branch: renamed refs/heads/main to refs/heads/main
+[33m65ed870[m HEAD@{4}: commit: 28 - Cleared Bugs
+[33m7609741[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{5}: Branch: renamed refs/heads/main to refs/heads/main
+[33m7609741[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{7}: commit: 27 - Payments
+[33me56b72f[m HEAD@{8}: commit: Updated README
+[33m61ed781[m HEAD@{9}: commit: 26 - Transcript and AI chat
+[33m3076b05[m HEAD@{10}: commit: 25: Completed State - Summay and Recording tabs - Done
+[33m1d07c30[m HEAD@{11}: commit: 24 - Background Jobs - Done
+[33md8a4813[m HEAD@{12}: commit: 23 - Connecting Agents - Done
+[33m2876b27[m HEAD@{13}: commit: 22 - Video Call - Done
+[33mbd20075[m HEAD@{14}: commit: 21 - Meeting Variants - Done
+[33mefe26f4[m HEAD@{15}: commit: 20 - Meeting Page - Done
+[33me9d5ae6[m HEAD@{16}: reset: moving to HEAD~1
+[33m607782b[m HEAD@{17}: commit: 21 - Meeting Variants - Done
+[33me9d5ae6[m HEAD@{18}: commit: 19 - Meetings Filters - Done
+[33m972d7f2[m HEAD@{19}: commit: 18 - Meetings Data Table - Done
+[33mb372e60[m HEAD@{20}: commit: 17 - Meetings Form - Done
+[33m1ce1831[m HEAD@{21}: commit: 16 - meetings Setup - Done
+[33m2e22223[m HEAD@{22}: commit: 15 - Agent Update and Delete - Done
+[33me8adec8[m HEAD@{23}: commit: 14 - Agent Page - Done
+[33me7a01fa[m HEAD@{24}: commit: 13 - Agent Filters - Done
+[33m043561d[m HEAD@{25}: commit: 13 - Agent Filters - Done
+[33mbd008dd[m HEAD@{26}: commit: 12 - Agents data Table - Done
+[33m49ad2f9[m HEAD@{27}: commit: 11 - Agent Form - Done
+[33m2402666[m HEAD@{28}: commit: 10 - Responsive Dialog - Done
+[33ma97b815[m HEAD@{29}: commit: 09 - Agents Setup - Done
+[33mfb1bf37[m HEAD@{30}: commit: 08 - TRPC setup - Done
+[33m73eed14[m HEAD@{31}: commit: 07 - Dashboard Navbar - Done
+[33m7fdfde8[m HEAD@{32}: commit: 06 - Dashboard Sidebar - Done
+[33m44020be[m HEAD@{33}: commit: 05 - Auth Socials - Done
+[33m671372b[m HEAD@{34}: commit: 05 - Auth socials -Done
+[33m12ed0ad[m HEAD@{35}: commit: 04 - Authentication Done
+[33mb02f86d[m HEAD@{36}: Branch: renamed refs/heads/main to refs/heads/main
+[33mb02f86d[m HEAD@{38}: commit: 03 - Authentication - DONE
+[33me90c45b[m HEAD@{39}: Branch: renamed refs/heads/main to refs/heads/main
+[33me90c45b[m HEAD@{41}: commit: 02 - DATABASE -DONE
+[33m3b008c9[m HEAD@{42}: Branch: renamed refs/heads/main to refs/heads/main
+[33m3b008c9[m HEAD@{44}: commit (initial): 01 - Setup - Done

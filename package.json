@@ -10,7 +10,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:inngest": "npx inngest-cli@latest dev",
-    "db:webhook": "ngrok http --url=closefisted-houston-thetically.ngrok-free.dev 3000"
+    "db:webhook": "ngrok http --url=nonfacetious-incivil-tisa.ngrok-free.app 3000"
   },
   "dependencies": {
     "@dicebear/collection": "^9.3.1",

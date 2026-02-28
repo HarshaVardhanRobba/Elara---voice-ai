@@ -12,7 +12,7 @@ import { MeetingIDviewHeader } from "../components/meeting-id-view-header";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useConfirm } from "../../hooks/use-confirm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UpdateMeetingDialog } from "../components/update-meeting-dialog";
 import { UpcommingState } from "../components/upcomming-state";
 import { ActiveState } from "../components/active-state";
@@ -30,9 +30,13 @@ export const MeetingIdView = ({ meetingsId }: MeetingIdViewProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data } = useSuspenseQuery(
-    trpc.meetings.getOne.queryOptions({ id: meetingsId })
-  );
+  const { data, refetch } = useSuspenseQuery({
+    ...trpc.meetings.getOne.queryOptions({ id: meetingsId }),
+    refetchInterval: (query) => {
+      // Poll every 2 seconds if meeting is active, otherwise disable polling
+      return query.state.data?.status === "active" ? 2000 : false;
+    },
+  });
 
   const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
   const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
