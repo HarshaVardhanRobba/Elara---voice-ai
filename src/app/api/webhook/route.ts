@@ -17,63 +17,56 @@ const openaiClient = new OpenAI({
 });
 
 export async function POST(request: NextRequest) {
+  console.log("🔔 Webhook request received");
+
   try {
     const signature = request.headers.get("x-signature");
 
     if (!signature) {
-      return NextResponse.json(
-        { error: "Missing signature" },
-        { status: 400 }
-      );
+      console.error("❌ Missing webhook signature");
+      return NextResponse.json({ error: "Missing signature" }, { status: 400 });
     }
 
     const body = await request.text();
-    const isValid = streamVideo.verifyWebhook(body, signature);
 
+    const isValid = streamVideo.verifyWebhook(body, signature);
     if (!isValid) {
-      return NextResponse.json(
-        { error: "Invalid signature" },
-        { status: 401 }
-      );
+      console.error("❌ Invalid webhook signature");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
 
     let payload: unknown;
     try {
       payload = JSON.parse(body);
-    } catch {
-      return NextResponse.json(
-        { error: "Invalid JSON payload" },
-        { status: 400 }
-      );
+    } catch (err) {
+      console.error("❌ Invalid JSON payload", err);
+      return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
     }
 
     const eventType = (payload as Record<string, unknown>).type;
+    console.log("📦 Incoming event type:", eventType);
 
     // ===============================
     // CALL SESSION STARTED
     // ===============================
     if (eventType === "call.session_started") {
+      console.log("🚀 Handling call.session_started");
+
       const event = payload as CallSessionStartedEvent;
       const meetingId = event.call?.custom?.meetingId;
 
       if (!meetingId) {
-        return NextResponse.json(
-          { error: "Missing meetingId" },
-          { status: 400 }
-        );
+        console.error("❌ Missing meetingId in session_started");
+        return NextResponse.json({ error: "Missing meetingId" }, { status: 400 });
       }
 
       const [existingMeeting] = await db
         .select()
         .from(meetings)
-        .where(
-          and(
-            eq(meetings.id, meetingId),
-            eq(meetings.status, "upcomming")
-          )
-        );
+        .where(and(eq(meetings.id, meetingId), eq(meetings.status, "upcomming")));
 
       if (!existingMeeting) {
+        console.warn("⚠️ Meeting not found or already started:", meetingId);
         return NextResponse.json({ status: "ignored" });
       }
 
@@ -82,16 +75,16 @@ export async function POST(request: NextRequest) {
         .set({ status: "active", startedAt: new Date() })
         .where(eq(meetings.id, meetingId));
 
+      console.log("✅ Meeting marked active:", meetingId);
+
       const [existingAgent] = await db
         .select()
         .from(agents)
         .where(eq(agents.id, existingMeeting.agentId));
 
       if (!existingAgent) {
-        return NextResponse.json(
-          { error: "Agent not found" },
-          { status: 404 }
-        );
+        console.error("❌ Agent not found:", existingMeeting.agentId);
+        return NextResponse.json({ error: "Agent not found" }, { status: 404 });
       }
 
       try {
@@ -108,12 +101,10 @@ export async function POST(request: NextRequest) {
           instructions: existingAgent.instructions,
           model: "gpt-5-nano",
         });
-      } catch (error) {
-        console.error("Agent connection failed:", error);
-        return NextResponse.json(
-          { error: "Failed to connect agent" },
-          { status: 500 }
-        );
+
+        console.log("🤖 OpenAI realtime agent connected");
+      } catch (err) {
+        console.error("❌ Failed to connect OpenAI realtime:", err);
       }
     }
 
@@ -121,14 +112,14 @@ export async function POST(request: NextRequest) {
     // CALL TRANSCRIPTION READY
     // ===============================
     else if (eventType === "call.transcription_ready") {
+      console.log("📝 Handling call.transcription_ready");
+
       const event = payload as CallTranscriptionReadyEvent;
       const callCid = event.call_cid;
 
       if (!callCid) {
-        return NextResponse.json(
-          { error: "Missing call_cid" },
-          { status: 400 }
-        );
+        console.error("❌ Missing call_cid");
+        return NextResponse.json({ error: "Missing call_cid" }, { status: 400 });
       }
 
       const meetingId = callCid.split(":")[1];
@@ -139,14 +130,8 @@ export async function POST(request: NextRequest) {
         .where(eq(meetings.id, meetingId));
 
       if (!existingMeeting) {
-        return NextResponse.json(
-          { error: "Meeting not found" },
-          { status: 404 }
-        );
-      }
-
-      if (existingMeeting.status !== "completed") {
-        return NextResponse.json({ status: "ignored" });
+        console.error("❌ Meeting not found for transcription:", meetingId);
+        return NextResponse.json({ error: "Meeting not found" }, { status: 404 });
       }
 
       const [updatedMeeting] = await db
@@ -155,73 +140,75 @@ export async function POST(request: NextRequest) {
         .where(eq(meetings.id, meetingId))
         .returning();
 
-      await inngest.send({
-        name: "meetings/processing",
-        data: {
-          meetingId: updatedMeeting.id,
-          transcriptUrl: updatedMeeting.transcriptUrl,
-        },
-      });
+      console.log("📤 Sending event to Inngest:", meetingId);
+
+      try {
+        await inngest.send({
+          name: "meetings/processing",
+          data: {
+            meetingId: updatedMeeting.id,
+            transcriptUrl: updatedMeeting.transcriptUrl,
+          },
+        });
+        console.log("✅ Inngest event sent successfully");
+      } catch (err) {
+        console.error("❌ Failed to send event to Inngest:", err);
+      }
     }
 
     // ===============================
     // CALL SESSION ENDED
     // ===============================
     else if (eventType === "call.session_ended") {
+      console.log("🔚 Handling call.session_ended");
+
       const event = payload as CallEndedEvent;
       const meetingId = event.call?.custom?.meetingId;
 
-      console.log("Call session ended event received", {
-        meetingId,
-        callId: event.call_cid,
-        customData: event.call?.custom,
-      });
-
       if (!meetingId) {
-        console.error("Missing meetingId in call.session_ended event", {
+        console.error("❌ Missing meetingId in session_ended", {
           callCid: event.call_cid,
-          custom: event.call?.custom,
         });
-        return NextResponse.json(
-          { error: "Missing meetingId" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: "Missing meetingId" }, { status: 400 });
       }
 
       await db
         .update(meetings)
         .set({ status: "completed", endedAt: new Date() })
-        .where(
-          and(
-            eq(meetings.id, meetingId),
-            eq(meetings.status, "active")
-          )
-        );
+        .where(and(eq(meetings.id, meetingId), eq(meetings.status, "active")));
 
-      console.log("Updated meeting status to completed", {
-        meetingId,
-      });
+      console.log("✅ Meeting marked completed:", meetingId);
     }
 
     // ===============================
     // RECORDING READY
     // ===============================
     else if (eventType === "call.recording_ready") {
+      console.log("🎥 Handling call.recording_ready");
+
       const event = payload as CallRecordingReadyEvent;
       const meetingId = event.call_cid?.split(":")[1];
+
+      if (!meetingId) {
+        console.warn("⚠️ Missing meetingId for recording_ready");
+        return NextResponse.json({ status: "ignored" });
+      }
 
       await db
         .update(meetings)
         .set({ recordingUrl: event.call_recording?.url })
         .where(eq(meetings.id, meetingId));
+
+      console.log("✅ Recording URL saved:", meetingId);
+    }
+
+    else {
+      console.log("ℹ️ Unhandled event type:", eventType);
     }
 
     return NextResponse.json({ status: "ok" });
   } catch (err) {
-    console.error("Webhook fatal error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error("💥 Fatal webhook error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
