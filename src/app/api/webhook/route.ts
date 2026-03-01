@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
 
         await realtimeClient.updateSession({
           instructions: existingAgent.instructions,
-          model: "gpt-5-nano",
+          model: "gpt-4o-mini"
         });
 
         console.log("🤖 OpenAI realtime agent connected");

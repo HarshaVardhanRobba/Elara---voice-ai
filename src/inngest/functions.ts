@@ -31,7 +31,7 @@ Example:
 - Mention of integration with Z
 `.trim(),
 model: openai({ 
-  model: "gpt-5-nano",
+  model: "gpt-4o-mini",
   apiKey: process.env.OPENAI_API_KEY,
 }),
 });
